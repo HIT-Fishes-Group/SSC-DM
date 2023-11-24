@@ -55,7 +55,7 @@ def train_epoch(model, device, attack_cls, coeff_adv_loss, coeff_sim_loss, dis_m
         clean_loss = F.cross_entropy(clean_output, target)
         adv_loss = F.cross_entropy(adv_output, target)
 
-        loss = clean_loss + coeff_adv_loss * adv_loss + coeff_sim_loss * sim_constraint(clean_output, adv_output, dis_metric)
+        loss = (1 - coeff_adv_loss) * clean_loss + coeff_adv_loss * adv_loss + coeff_sim_loss * sim_constraint(clean_output, adv_output, dis_metric)
         loss.backward()
 
         optimizer.step()
@@ -103,7 +103,7 @@ def test_epoch(model, device, attack_cls, coeff_adv_loss, test_loader, epoch):
             clean_loss = F.cross_entropy(clean_output, target)
             adv_loss = F.cross_entropy(adv_output, target)
 
-            loss = clean_loss + coeff_adv_loss * adv_loss
+            loss = (1 - coeff_adv_loss) * clean_loss + coeff_adv_loss * adv_loss
 
             clean_pred = clean_output.argmax(dim=1, keepdim=True)
             adv_pred = adv_output.argmax(dim=1, keepdim=True)
